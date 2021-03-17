@@ -1,11 +1,13 @@
-# include <LiquidCrystal.h>
-# include "helpers/ultrasonic.h"
+#include <LiquidCrystal.h>
 
-# define ECHO 13
-# define TRIGGER 10
-# define LED 8
+#include "helpers/ultrasonic.h"
+
+#define ECHO 13
+#define TRIGGER 10
+#define LED 8
 
 LiquidCrystal lcd(1, 2, 4, 5, 6, 7);
+int minDistance = 3;  // 7 cm
 
 void setup() {
     Serial.begin(9600);
@@ -19,11 +21,9 @@ void setup() {
 
 void loop() {
     int cm = ping(TRIGGER, ECHO);
-    Serial.print("Distancia: ");
-    Serial.println(cm);
-
-    if (cm <= 13) {
+    if (cm <= minDistance) {
         digitalWrite(LED, HIGH);
+        Serial.println(cm);
     } else {
         digitalWrite(LED, LOW);
     }
