@@ -18,12 +18,21 @@ if __name__ == '__main__':
             print("{} connected!".format(arduino.port))
             try:
                 while IS_RUNNING:
+                    arduino.setDTR(False)
+                    time.sleep(1)
+                    arduino.flushInput()
+                    arduino.setDTR(True)
+
                     while arduino.inWaiting() == 0:
                         pass
-                    if arduino.inWaiting() > 0:
-                        answer = arduino.readline()
-                        print(answer)
-                        time.sleep(1)
 
+                    if arduino.inWaiting() > 0:
+                        try:
+                            answer = arduino.readline()
+                            decoded_bytes = answer.decode("utf-8")
+                            if decoded_bytes:
+                                print(decoded_bytes)
+                        except Exception as e:
+                            print(e)
             except KeyboardInterrupt:
                 print("KeyboardInterrupt has been caught.")
