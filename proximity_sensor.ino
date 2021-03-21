@@ -1,12 +1,10 @@
+#include "helpers/lights.h"
 #include "helpers/ultrasonic.h"
 
 #define ECHO 13
 #define TRIGGER 10
 #define LED 8
 #define RELAY 9
-
-int minDistance = 5;  // In cm
-int minLight = 300;
 
 void setup() {
     Serial.begin(9600);
@@ -18,32 +16,10 @@ void setup() {
 }
 
 void loop() {
-    turnLightsIfNeeded();
+    // Turning relay when it is getting dark.
+    byte isTurningLight = hasToTurnLights();
+    digitalWrite(RELAY, isTurningLight);
 
-    int currentDistance = ping(TRIGGER, ECHO);
-    int voltageToApply;
-
-    if (currentDistance < minDistance) {
-        voltageToApply = HIGH;
-    } else {
-        voltageToApply = LOW;
-    }
-
-    digitalWrite(LED, voltageToApply);
-    Serial.print("Distance: ");
-    Serial.println(currentDistance);
-    Serial.flush();
-}
-
-void turnLightsIfNeeded() {
-    int lightValue = analogRead(A0);
-    int voltageToApply;
-
-    if (lightValue <= minLight) {
-        voltageToApply = HIGH;
-    } else {
-        voltageToApply = LOW;
-    }
-
-    digitalWrite(RELAY, voltageToApply);
+    byte hasToTurnLedOn = hasToTurnLed(TRIGGER, ECHO) ? HIGH : LOW;
+    turnLedOn(LED, hasToTurnLedOn);
 }
